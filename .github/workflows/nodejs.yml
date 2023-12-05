@@ -40,17 +40,17 @@ jobs:
       - name: Tag the commit
         run: |
           git tag ${{ env.NEW_TAG }}
-          git push https://${{ secrets.GH_PAT }}:x-oauth-basic@github.com/MeirBen/mortgage.git --tags
+          git push https://${{ secrets.GH_PAT }}:x-oauth-basic@github.com/MeirBen/mortgage_client.git --tags
 
       - name: Build Docker Image
-        run: docker build -t mortgage-calculator:${{ env.NEW_TAG }} .
+        run: docker build -t mortgage-calculator-client:${{ env.NEW_TAG }} .
 
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Image to Docker Hub with tags
         run: |
-          docker tag mortgage-calculator:${{ env.NEW_TAG }} ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:${{ env.NEW_TAG }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:${{ env.NEW_TAG }}
-          docker tag mortgage-calculator:${{ env.NEW_TAG }} ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:latest
+          docker tag mortgage-calculator-client:${{ env.NEW_TAG }} ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator-client:${{ env.NEW_TAG }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator-client:${{ env.NEW_TAG }}
+          docker tag mortgage-calculator-client:${{ env.NEW_TAG }} ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator-client:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator-client:latest
