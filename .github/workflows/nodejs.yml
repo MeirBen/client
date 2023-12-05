@@ -1,0 +1,56 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Generate tag
+        run: echo "NEW_TAG=v$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Output new tag
+        run: echo "New Tag=${{ env.NEW_TAG }}"
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Set up Git for tagging
+        run: |
+          git config --global user.name 'Your Name'
+          git config --global user.email 'your.email@example.com'
+
+      - name: Tag the commit
+        run: |
+          git tag ${{ env.NEW_TAG }}
+          git push https://${{ secrets.GH_PAT }}:x-oauth-basic@github.com/MeirBen/mortgage.git --tags
+
+      - name: Build Docker Image
+        run: docker build -t mortgage-calculator:${{ env.NEW_TAG }} .
+
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push Image to Docker Hub with tags
+        run: |
+          docker tag mortgage-calculator:${{ env.NEW_TAG }} ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:${{ env.NEW_TAG }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:${{ env.NEW_TAG }}
+          docker tag mortgage-calculator:${{ env.NEW_TAG }} ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/mortgage-calculator:latest
