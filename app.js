@@ -5,6 +5,10 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
+after(() => {
+  app.close();
+});
+
 app.post('/calculate', async (req, res) => {
   try {
     const response = await axios.post('http://localhost:3001/calculate', req.body);
