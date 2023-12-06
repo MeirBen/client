@@ -9,7 +9,7 @@ app.post('/calculate', async (req, res) => {
   try {
     // Replace 'localhost' with the service name or container name of your calculation service.
     // For example, if your calculation service container's name is 'calculation-service', use:
-    const response = await axios.post('http://mortgage-server-container:3001/calculate', req.body);
+    const response = await axios.post('http://mortgage-calculator:3001/calculate', req.body);
     res.send(`Monthly Payment: ${response.data.monthlyPayment}`);
   } catch (error) {
     console.error('Error: ', error.message);  // Log the error for debugging
