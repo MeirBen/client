@@ -5,10 +5,6 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
-after(() => {
-  app.close();
-});
-
 app.post('/calculate', async (req, res) => {
   try {
     const response = await axios.post('http://localhost:3001/calculate', req.body);
@@ -18,10 +14,10 @@ app.post('/calculate', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT = 3000;
+server = app.listen(PORT, () => {
   console.log(`Main App running on port ${PORT}`);
 });
 
-module.exports = app;  // Export the express app
+module.exports = { app, server }; // Export the app and server
 
